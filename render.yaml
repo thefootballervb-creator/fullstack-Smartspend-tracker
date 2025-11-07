@@ -2,6 +2,7 @@ services:
   - type: web
     name: smartspend-backend
     env: java
+    runtime: java21
     rootDir: backend
     buildCommand: ./mvnw clean package -DskipTests
     startCommand: java -jar target/expenseTracker-0.0.1-SNAPSHOT.jar
