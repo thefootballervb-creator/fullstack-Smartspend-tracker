@@ -4,7 +4,7 @@
   publish = "build"
 
 [context.production.environment]
-  REACT_APP_API_URL = "https://smartspend-backend-ddu6.onrender.com/mypockit"
+  REACT_APP_API_URL = "https://smartspend-backend-ddu6.onrender.com"
 
 [[redirects]]
   from = "/*"
