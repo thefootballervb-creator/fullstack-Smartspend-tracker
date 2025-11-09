@@ -3,8 +3,8 @@ services:
     name: smartspend-backend
     env: docker
     plan: free
-    dockerfilePath: Fullstack-Expense-Tracker-main/backend/Dockerfile
-    dockerContext: Fullstack-Expense-Tracker-main/backend
+    dockerfilePath: ./Fullstack-Expense-Tracker-main/backend/Dockerfile
+    dockerContext: ./Fullstack-Expense-Tracker-main/backend
     envVars:
       - key: DB_URL
         sync: false
@@ -30,4 +30,4 @@ services:
         value: Expense Tracker
     buildFilter:
       paths:
-        - Fullstack-Expense-Tracker-main/backend/**
+        - ./Fullstack-Expense-Tracker-main/backend/**
