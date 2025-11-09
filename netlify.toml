@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build"
+  command = "cd frontend && npm ci && npm run build && cp -r build ../build"
   publish = "build"
 
 [context.production.environment]
