@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import UserService from "../services/userService";
 import AuthService from "../services/auth.service";
 
@@ -7,25 +7,7 @@ function useExpenseVsIncomeSummary(months) {
     const [isError, setIsError] = useState(false);
     const [isLoading, setIsLoading] = useState(true)
 
-    useEffect(() => {
-        const getData = async () => {
-            const income_response = await UserService.getMonthlySummary(AuthService.getCurrentUser().email).then(
-                (response) => {
-                    if (response.data.status === "SUCCESS") {
-                        generateData(response.data.response)
-                    }
-                },
-                (error) => {
-                    setIsError(true)
-                }
-            )
-            setIsLoading(false)
-        }
-
-        getData()
-    }, [months])
-
-    const generateData = (fetchedData) => {
+    const generateData = useCallback((fetchedData) => {
         const finalData = months.map(({ id, monthName }) => {
             const monthData = fetchedData.find((t) => t.month === id)
             return {
@@ -35,7 +17,25 @@ function useExpenseVsIncomeSummary(months) {
             }
         })
         setData(finalData)
-    }
+    }, [months])
+
+    useEffect(() => {
+        const getData = async () => {
+            await UserService.getMonthlySummary(AuthService.getCurrentUser().email).then(
+                (response) => {
+                    if (response.data.status === "SUCCESS") {
+                        generateData(response.data.response)
+                    }
+                },
+                () => {
+                    setIsError(true)
+                }
+            )
+            setIsLoading(false)
+        }
+
+        getData()
+    }, [generateData])
 
     return [data, isLoading, isError]
 }

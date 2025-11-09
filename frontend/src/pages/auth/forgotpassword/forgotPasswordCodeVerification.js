@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {useForm} from 'react-hook-form';
 import AuthService from '../../../services/auth.service';
@@ -7,7 +7,7 @@ function ForgotPasswordCodeVerification() {
 
     const navigate = useNavigate();
 
-    const { email } = useParams(); 
+    const { email } = useParams();
 
     const {register, handleSubmit, formState} = useForm();
 
@@ -16,8 +16,8 @@ function ForgotPasswordCodeVerification() {
     const [isSending, setIsSending] = useState(false);
 
     const onSubmit = async (data) => {
-        setIsLoading(true)        
-        const response = await AuthService.forgotPasswordverifyCode(data.code).then(
+        setIsLoading(true)
+        await AuthService.forgotPasswordverifyCode(data.code).then(
             (response) => {
                 console.log(response.data.message);
                 if (response.data.status === 'SUCCESS') {
@@ -43,8 +43,8 @@ function ForgotPasswordCodeVerification() {
 
     const resendCode = async() =>{
         setResponseError("")
-        setIsSending(true)        
-        const response = await AuthService.resendResetPasswordVerificationCode(email).then(
+        setIsSending(true)
+        await AuthService.resendResetPasswordVerificationCode(email).then(
             (response) => {
                 console.log(response.data);
                 if (response.data.status === "SUCCESS") {
@@ -53,7 +53,7 @@ function ForgotPasswordCodeVerification() {
                 }else {
                     setResponseError("Verification failed: Cannot resend email!")
                 }
-                
+
             },
             (error) => {
                 if (error.response) {
@@ -73,11 +73,11 @@ function ForgotPasswordCodeVerification() {
         <div className='container'>
                 <form className="auth-form"  onSubmit={handleSubmit(onSubmit)}>
                 <h2>Verify your email</h2><br/>
-                
+
                 {
-                    isSending ? 
-                        <div className='msg'>Sending email to {email}...</div> 
-                        : (response_error==="") 
+                    isSending ?
+                        <div className='msg'>Sending email to {email}...</div>
+                        : (response_error==="")
                         ? <div className='msg'>The verification code has been sent to <span style={{fontWeight:600,  color:'green'}}>{email}</span>.</div>
                         : <></>
                 }
@@ -85,9 +85,9 @@ function ForgotPasswordCodeVerification() {
                 {
                     (response_error!=="") && <p>{response_error}</p>
                 }
-                
+
                 <div className='input-box'>
-                    <input 
+                    <input
                     placeholder='Enter verification code'
                         type='text'
                         {...register('code', {

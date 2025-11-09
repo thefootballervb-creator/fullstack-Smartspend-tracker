@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import UserService from '../../services/userService';
 import Header from '../../components/utils/header';
 import Loading from '../../components/utils/loading';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Info from '../../components/utils/Info.js';
 import Container from '../../components/utils/Container.js';
 import toast, { Toaster } from 'react-hot-toast';
@@ -11,6 +11,7 @@ function SavedTransactions() {
     const [userTransactions, setUserTransactions] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const location = useLocation();
+    const navigate = useNavigate();
 
     const getTransactions = async () => {
         setIsLoading(true)
@@ -63,9 +64,11 @@ function SavedTransactions() {
     }, [])
 
     useEffect(() => {
-        location.state && toast.success(location.state.text)
-        location.state = null
-    }, [])
+        if (location.state?.text) {
+            toast.success(location.state.text);
+            navigate(location.pathname, { replace: true, state: null });
+        }
+    }, [location, navigate])
 
     return (
         <Container activeNavId={11}>
@@ -79,7 +82,7 @@ function SavedTransactions() {
                         <h2>Save your recurring transactions to quick access!</h2>
                         <Link to={ `/user/savedTransactions/new`}><button>+ Add new</button></Link>
                     </div>
-                    
+
                     {(userTransactions.length === 0) && <Info text={"No transactions found!"} />}
                     {(userTransactions.length !== 0) && <SavedTransactionList list={userTransactions} saveTransaction={saveTransaction} skipTransaction={skipTransaction}/>}
                 </>
@@ -104,25 +107,25 @@ function SavedTransactionList({ list, saveTransaction, skipTransaction }) {
                     {t.description}
                 </p>
                 <p className={t.dueInformation.includes('overdue') ? 'due overdue' : t.dueInformation.includes('Today') ? 'due today' : 'due'}>
-                    {t.dueInformation} ({t.frequency}) 
-                    {t.dueInformation.includes('overdue') ? 
-                        <i className='fa fa-exclamation-circle' aria-hidden='true'></i> : 
-                        t.dueInformation.includes('Today') ? 
+                    {t.dueInformation} ({t.frequency})
+                    {t.dueInformation.includes('overdue') ?
+                        <i className='fa fa-exclamation-circle' aria-hidden='true'></i> :
+                        t.dueInformation.includes('Today') ?
                         <i className='fa fa-history' aria-hidden='true'></i> : <></>}
-                    
+
                 </p>
                 <div>
-                    <button 
+                    <button
                         onClick={() => saveTransaction(t.planId)}
                     >Confirm</button>
-                    <button 
+                    <button
                         className='button outline'
                         onClick={() => skipTransaction(t.planId)}
                     >Skip</button>
                     <Link to={`/user/editSavedTransaction/${t.planId}`}><button className='button outline'>Edit</button></Link>
                 </div>
             </div>
-                
+
             )
         }) }
         </div>

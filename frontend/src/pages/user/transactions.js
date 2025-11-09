@@ -1,14 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import UserService from '../../services/userService';
 import AuthService from '../../services/auth.service';
 import Header from '../../components/utils/header';
-import Message from '../../components/utils/message';
 import Loading from '../../components/utils/loading';
 import Search from '../../components/utils/search';
 import usePagination from '../../hooks/usePagination';
 import PageInfo from '../../components/utils/pageInfo';
 import TransactionList from '../../components/userTransactions/transactionList.js';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Info from '../../components/utils/Info.js';
 import Container from '../../components/utils/Container.js';
 import toast, { Toaster } from 'react-hot-toast';
@@ -26,13 +25,14 @@ function Transactions() {
     const [categories, setCategories] = useState([])
     const [selectedCategoryId, setSelectedCategoryId] = useState("")
     const location = useLocation();
+    const navigate = useNavigate();
 
     const {
         pageSize, pageNumber, noOfPages, sortField, sortDirec, searchKey,
         onNextClick, onPrevClick, setNoOfPages, setNoOfRecords, setSearchKey, getPageInfo
     } = usePagination('date')
 
-    const getTransactions = async () => {
+    const getTransactions = useCallback(async () => {
         await UserService.get_transactions(AuthService.getCurrentUser().email, pageNumber,
             pageSize, searchKey, sortField, sortDirec, transactionType).then(
                 (response) => {
@@ -48,16 +48,18 @@ function Transactions() {
                 }
             )
         setIsFetching(false)
-    }
+    }, [pageNumber, pageSize, searchKey, sortField, sortDirec, transactionType, setNoOfPages, setNoOfRecords])
 
     useEffect(() => {
         getTransactions()
-    }, [pageNumber, searchKey, transactionType, sortDirec, sortField])
+    }, [getTransactions])
 
     useEffect(() => {
-        location.state && toast.success(location.state.text)
-        location.state = null
-    }, [])
+        if (location.state?.text) {
+            toast.success(location.state.text)
+            navigate(location.pathname, { replace: true, state: null })
+        }
+    }, [location, navigate])
 
     useEffect(() => {
         (async ()=>{
@@ -106,12 +108,12 @@ function Transactions() {
                     <div style={{display:'flex', justifyContent:'center', gap: '8px', marginTop: '20px', padding: '20px'}}>
                         <button onClick={async ()=>{
                             try{
-                                const params = { 
-                                    email: AuthService.getCurrentUser().email, 
-                                    ...(from ? { from } : {}), 
-                                    ...(to ? { to } : {}), 
-                                    ...(selectedCategoryId ? { categoryId: parseInt(selectedCategoryId) } : {}), 
-                                    ...(min ? { min: parseFloat(min) } : {}), 
+                                const params = {
+                                    email: AuthService.getCurrentUser().email,
+                                    ...(from ? { from } : {}),
+                                    ...(to ? { to } : {}),
+                                    ...(selectedCategoryId ? { categoryId: parseInt(selectedCategoryId) } : {}),
+                                    ...(min ? { min: parseFloat(min) } : {}),
                                     ...(max ? { max: parseFloat(max) } : {})
                                 };
                                 const blob = await UserService.exportPdf(params);
@@ -124,19 +126,19 @@ function Transactions() {
                                 link.href = url; link.download = 'transactions.pdf'; link.click();
                                 window.URL.revokeObjectURL(url);
                                 toast.success('PDF exported successfully!');
-                            }catch(e){ 
+                            }catch(e){
                                 console.error('PDF export error:', e);
-                                toast.error('Export PDF failed: ' + (e.response?.data?.message || e.message || 'Unknown error')); 
+                                toast.error('Export PDF failed: ' + (e.response?.data?.message || e.message || 'Unknown error'));
                             }
                         }}>Export PDF</button>
                         <button onClick={async ()=>{
                             try{
-                                const params = { 
-                                    email: AuthService.getCurrentUser().email, 
-                                    ...(from ? { from } : {}), 
-                                    ...(to ? { to } : {}), 
-                                    ...(selectedCategoryId ? { categoryId: parseInt(selectedCategoryId) } : {}), 
-                                    ...(min ? { min: parseFloat(min) } : {}), 
+                                const params = {
+                                    email: AuthService.getCurrentUser().email,
+                                    ...(from ? { from } : {}),
+                                    ...(to ? { to } : {}),
+                                    ...(selectedCategoryId ? { categoryId: parseInt(selectedCategoryId) } : {}),
+                                    ...(min ? { min: parseFloat(min) } : {}),
                                     ...(max ? { max: parseFloat(max) } : {})
                                 };
                                 const blob = await UserService.exportExcel(params);
@@ -149,9 +151,9 @@ function Transactions() {
                                 link.href = url; link.download = 'transactions.xlsx'; link.click();
                                 window.URL.revokeObjectURL(url);
                                 toast.success('Excel exported successfully!');
-                            }catch(e){ 
+                            }catch(e){
                                 console.error('Excel export error:', e);
-                                toast.error('Export Excel failed: ' + (e.response?.data?.message || e.message || 'Unknown error')); 
+                                toast.error('Export Excel failed: ' + (e.response?.data?.message || e.message || 'Unknown error'));
                             }
                         }}>Export Excel</button>
                     </div>

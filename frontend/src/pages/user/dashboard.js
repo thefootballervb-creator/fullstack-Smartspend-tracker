@@ -8,7 +8,7 @@ import useDashboard from '../../hooks/useDashboard';
 import Loading from '../../components/utils/loading';
 import Info from '../../components/utils/Info';
 import Container from '../../components/utils/Container';
-import toast, { Toaster } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
 
 function Dashboard() {
 
@@ -19,7 +19,7 @@ function Dashboard() {
         saveBudget, isLoading, isError] = useDashboard(currentMonth)
 
     const onMonthChange = (id) => {
-        const month = months.find(m => m.id == id)
+        const month = months.find(m => m.id === Number(id))
         setMonth(month)
     }
 

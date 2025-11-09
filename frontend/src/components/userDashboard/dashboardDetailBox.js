@@ -22,7 +22,7 @@ function Box({amount, src, title}) {
                 <h2>{amount}</h2>
                 <h4>{title}</h4>
             </div>
-            <img src={src}/>
+            <img src={src} alt={title} />
         </div>
     )
 }

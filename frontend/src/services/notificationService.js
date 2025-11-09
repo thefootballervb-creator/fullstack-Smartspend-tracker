@@ -45,5 +45,7 @@ export const disconnectNotifications = () => {
   }
 };
 
-export default { connectNotifications, disconnectNotifications };
+const notificationService = { connectNotifications, disconnectNotifications };
+
+export default notificationService;
 

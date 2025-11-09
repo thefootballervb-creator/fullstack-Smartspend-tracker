@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import UserService from '../../services/userService';
 import TransactionTypeSelectWrapper from '../../components/userTransactions/transactionTypeSelectWrapper';
@@ -28,7 +28,7 @@ function EditSavedTransaction() {
 
 
     // to be edited transaction fetch
-    async function getTransaction() {
+    const getTransaction = useCallback(async () => {
         await UserService.getSavedTransactionById(transactionId).then(
             (response) => {
                 if (response.data.status === "SUCCESS") {
@@ -42,12 +42,11 @@ function EditSavedTransaction() {
                     toast.error("Failed to fetch transaction information: Try again later!")
             }
         )
-
-    }
+    }, [transactionId])
 
     useEffect(() => {
         getTransaction()
-    }, [transactionId])
+    }, [getTransaction])
 
     useEffect(() => {
         setTransactionType(transaction.transactionTypeId)
@@ -57,7 +56,7 @@ function EditSavedTransaction() {
     const onSubmit = async (data) => {
         setIsSaving(true)
         await UserService.updateSavedTransaction(
-            transaction.planId, data.category, data.amount, data.description, data.frequency, data.date, 
+            transaction.planId, data.category, data.amount, data.description, data.frequency, data.date,
         ).then(
             (response) => {
                 if (response.data.status === "SUCCESS") {

@@ -5,7 +5,6 @@ import UserService from '../../services/userService';
 import TransactionForm from '../../components/userTransactions/transactionForm';
 import TransactionTypeSelectWrapper from '../../components/userTransactions/transactionTypeSelectWrapper';
 import Header from '../../components/utils/header';
-import Message from '../../components/utils/message';
 import Loading from '../../components/utils/loading';
 import useCategories from '../../hooks/useCategories';
 import Info from '../../components/utils/Info';
