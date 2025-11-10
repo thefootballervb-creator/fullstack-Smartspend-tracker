@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
-@ConditionalOnProperty(name = "email.provider", havingValue = "smtp", matchIfMissing = true)
+@ConditionalOnProperty(name = "email.provider", havingValue = "smtp")
 @Slf4j
 public class EmailNotificationService implements NotificationService {
 
@@ -45,7 +45,7 @@ public class EmailNotificationService implements NotificationService {
 
         log.info("Attempting to send verification email to: {}", toAddress);
         log.debug("From address: {}, From name: {}, Subject: {}", fromAddress, fromName, subject);
-        
+
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message);
@@ -82,7 +82,7 @@ public class EmailNotificationService implements NotificationService {
 
         log.info("Attempting to send forgot password email to: {}", toAddress);
         log.debug("From address: {}, From name: {}, Subject: {}", fromAddress, fromName, subject);
-        
+
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message);
